@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout — Metatron's Store</title>
+    <style>
+        :root {
+            --bg: #0a0a0f; --card: #14141f; --border: #2a2a3a;
+            --text: #e0e0e0; --dim: #8888aa; --accent: #ff6b35; --green: #00cc66;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: var(--bg); color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            line-height: 1.6; min-height: 100vh;
+        }
+        .container { max-width: 600px; margin: 0 auto; padding: 2rem 1rem; }
+        header { text-align: center; padding: 2rem 0 1rem; }
+        header a { color: var(--accent); text-decoration: none; font-size: 0.9rem; }
+        h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+        .product-info {
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 12px; padding: 1.5rem; margin: 1.5rem 0;
+        }
+        .amount { font-size: 2rem; font-weight: 700; color: var(--accent); text-align: center; padding: 1rem 0; }
+        .wallet-box {
+            background: #000; border: 2px solid var(--accent); border-radius: 12px;
+            padding: 1.5rem; text-align: center; margin: 1.5rem 0;
+        }
+        .wallet-box .addr {
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem; word-break: break-all;
+            color: var(--green); margin: 0.5rem 0;
+        }
+        .wallet-box .network { color: var(--dim); font-size: 0.8rem; }
+        .copy-btn {
+            background: var(--border); color: var(--text); border: none;
+            padding: 0.5rem 1.5rem; border-radius: 6px; cursor: pointer;
+            font-size: 0.85rem; margin-top: 0.5rem;
+        }
+        .copy-btn:hover { background: var(--accent); }
+        .steps { margin: 2rem 0; }
+        .step {
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 10px; padding: 1rem 1.5rem; margin-bottom: 0.75rem;
+            display: flex; gap: 1rem; align-items: flex-start;
+        }
+        .step-num {
+            background: var(--accent); color: #fff; min-width: 28px; height: 28px;
+            border-radius: 14px; display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.85rem;
+        }
+        .step p { margin: 0; font-size: 0.9rem; }
+        .step code { background: var(--border); padding: 0.1rem 0.4rem; border-radius: 3px; font-size: 0.85rem; color: var(--accent); }
+        .email-link {
+            display: block; text-align: center; background: var(--accent); color: #fff;
+            padding: 0.8rem; border-radius: 10px; text-decoration: none; font-weight: 600;
+            margin: 1rem 0; font-size: 0.95rem;
+        }
+        .email-link:hover { background: #e85d2a; }
+        footer { text-align: center; padding: 2rem 0; color: var(--dim); font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="index.html">← Back to Store</a>
+            <h1 id="productName">Loading...</h1>
+            <p style="color: var(--dim);">Pay with crypto — instant delivery</p>
+        </header>
+
+        <div class="product-info">
+            <div class="amount" id="priceDisplay">0.000 ETH</div>
+            <p style="text-align: center; color: var(--dim);">on Base (Ethereum L2)</p>
+        </div>
+
+        <div class="wallet-box">
+            <p style="font-weight: 600;">Send exactly this amount to:</p>
+            <p class="addr" id="walletAddr">0x11B185ceFcB2A001FFDddf0f226437D16EbF5437</p>
+            <p class="network">Base Network (Chain ID: 8453)</p>
+            <button class="copy-btn" onclick="copyAddr()">📋 Copy Address</button>
+        </div>
+
+        <div class="steps">
+            <div class="step">
+                <div class="step-num">1</div>
+                <p>Send <strong id="stepAmount">0.000 ETH</strong> to the address above on <strong>Base network</strong></p>
+            </div>
+            <div class="step">
+                <div class="step-num">2</div>
+                <p>Copy the <strong>transaction hash</strong> from your wallet after sending</p>
+            </div>
+            <div class="step">
+                <div class="step-num">3</div>
+                <p>Email <code>metatron@agentmail.to</code> with your TX hash and product name</p>
+            </div>
+            <div class="step">
+                <div class="step-num">4</div>
+                <p>Receive your product by email — usually within 10 minutes ⚡</p>
+            </div>
+        </div>
+
+        <a class="email-link" id="emailLink" href="#">📧 Send Confirmation Email</a>
+
+        <footer>
+            <p>Questions? <a href="mailto:metatron@agentmail.to" style="color: var(--accent);">metatron@agentmail.to</a></p>
+        </footer>
+    </div>
+
+    <script>
+        // Parse URL params
+        const params = new URLSearchParams(window.location.search);
+        const product = params.get('product') || 'unknown';
+        const price = params.get('price') || '0';
+        const name = decodeURIComponent(params.get('name') || 'Product');
+
+        document.getElementById('productName').textContent = name;
+        document.getElementById('priceDisplay').textContent = price + ' ETH';
+        document.getElementById('stepAmount').textContent = price + ' ETH';
+        
+        const emailSubject = encodeURIComponent('Order: ' + name);
+        const emailBody = encodeURIComponent(
+            'Product: ' + name + '\n' +
+            'Amount: ' + price + ' ETH\n' +
+            'Transaction Hash: [paste your TX hash here]\n' +
+            'Network: Base\n' +
+            'Wallet Address: [your wallet address for delivery]\n'
+        );
+        document.getElementById('emailLink').href = 'mailto:metatron@agentmail.to?subject=' + emailSubject + '&body=' + emailBody;
+
+        function copyAddr() {
+            const addr = document.getElementById('walletAddr').textContent;
+            navigator.clipboard.writeText(addr).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                btn.textContent = '✓ Copied!';
+                setTimeout(() => btn.textContent = '📋 Copy Address', 2000);
+            });
+        }
+    </script>
+</body>
+</html>
