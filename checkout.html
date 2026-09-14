@@ -34,6 +34,7 @@
             color: var(--green); margin: 0.5rem 0;
         }
         .wallet-box .network { color: var(--dim); font-size: 0.8rem; }
+        .rails { cursor: pointer; }
         .copy-btn {
             background: var(--border); color: var(--text); border: none;
             padding: 0.5rem 1.5rem; border-radius: 6px; cursor: pointer;
@@ -67,12 +68,12 @@
         <header>
             <a href="index.html">← Back to Store</a>
             <h1 id="productName">Loading...</h1>
-            <p style="color: var(--dim);">Pay with crypto — instant delivery</p>
+            <p style="color: var(--dim);">Pay any way — instant delivery</p>
         </header>
 
         <div class="product-info">
             <div class="amount" id="priceDisplay">0.000 ETH</div>
-            <p style="text-align: center; color: var(--dim);">on Base (Ethereum L2)</p>
+            <p style="text-align: center; color: var(--dim);">ETH on Base (Ethereum L2) — or any rail below</p>
         </div>
 
         <div class="wallet-box">
@@ -82,18 +83,31 @@
             <button class="copy-btn" onclick="copyAddr()">📋 Copy Address</button>
         </div>
 
+        <div class="wallet-box" style="border-width: 1px; border-color: var(--border);">
+            <p style="font-weight: 600;">Prefer another rail? We take anything:</p>
+            <p class="network" style="margin-top: 0.5rem;">USDC / USDT / any EVM coin — same address, any EVM chain</p>
+            <p class="addr rails" onclick="copyText(this)">0x11B185ceFcB2A001FFDddf0f226437D16EbF5437</p>
+            <p class="network">Bitcoin</p>
+            <p class="addr rails" onclick="copyText(this)">bc1q39909zump058dnngjldelunf0plyzlqml2qm29</p>
+            <p class="network">Solana — SOL or USDC-SPL</p>
+            <p class="addr rails" onclick="copyText(this)">D1dCds8PrFFAPS5WqyVEai828UmEw77zVidtgeQSte78</p>
+            <p class="network">Lightning ⚡</p>
+            <p class="addr rails" onclick="copyText(this)">metatronscribe@coinos.io</p>
+            <p class="network" style="margin-top: 0.75rem;">Match the ETH value at send time. Any other coin or currency (fiat by invoice) — just email us. If you can send it, we take it.</p>
+        </div>
+
         <div class="steps">
             <div class="step">
                 <div class="step-num">1</div>
-                <p>Send <strong id="stepAmount">0.000 ETH</strong> to the address above on <strong>Base network</strong></p>
+                <p>Send <strong id="stepAmount">0.000 ETH</strong> to the address above on <strong>Base network</strong> — or pick any rail in the box above</p>
             </div>
             <div class="step">
                 <div class="step-num">2</div>
-                <p>Copy the <strong>transaction hash</strong> from your wallet after sending</p>
+                <p>Copy the <strong>transaction hash</strong> (or payment proof) from your wallet after sending</p>
             </div>
             <div class="step">
                 <div class="step-num">3</div>
-                <p>Email <code>metatron.scribe@proton.me</code> with your TX hash and product name</p>
+                <p>Email <code>metatron.scribe@proton.me</code> with your payment proof and product name</p>
             </div>
             <div class="step">
                 <div class="step-num">4</div>
@@ -118,14 +132,14 @@
         document.getElementById('productName').textContent = name;
         document.getElementById('priceDisplay').textContent = price + ' ETH';
         document.getElementById('stepAmount').textContent = price + ' ETH';
-        
+
         const emailSubject = encodeURIComponent('Order: ' + name);
         const emailBody = encodeURIComponent(
             'Product: ' + name + '\n' +
-            'Amount: ' + price + ' ETH\n' +
-            'Transaction Hash: [paste your TX hash here]\n' +
-            'Network: Base\n' +
-            'Wallet Address: [your wallet address for delivery]\n'
+            'Amount: ' + price + ' ETH (or equivalent value)\n' +
+            'Transaction Hash / Payment proof: [paste here]\n' +
+            'Rail: [Base ETH / BTC / SOL / Lightning / other]\n' +
+            'Contact for delivery: [your email or wallet]\n'
         );
         document.getElementById('emailLink').href = 'mailto:metatron.scribe@proton.me?subject=' + emailSubject + '&body=' + emailBody;
 
@@ -135,6 +149,14 @@
                 const btn = document.querySelector('.copy-btn');
                 btn.textContent = '✓ Copied!';
                 setTimeout(() => btn.textContent = '📋 Copy Address', 2000);
+            });
+        }
+
+        function copyText(el) {
+            const orig = el.textContent;
+            navigator.clipboard.writeText(orig.trim()).then(() => {
+                el.textContent = '✓ copied!';
+                setTimeout(() => el.textContent = orig, 1500);
             });
         }
     </script>
