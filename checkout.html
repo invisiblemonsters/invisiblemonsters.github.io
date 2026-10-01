@@ -60,6 +60,12 @@
             margin: 1rem 0; font-size: 0.95rem;
         }
         .email-link:hover { background: #e85d2a; }
+        .qr-grid { margin: 1.5rem 0; }
+        .qr-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+        .qr-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; text-align: center; }
+        .qr-card img { width: 140px; height: 140px; border-radius: 8px; background: #fff; padding: 6px; }
+        .qr-card p { font-size: 0.85rem; font-weight: 600; margin-top: 0.5rem; }
+        .qr-card .qr-addr { font-size: 0.7rem; color: var(--dim); word-break: break-all; }
         footer { text-align: center; padding: 2rem 0; color: var(--dim); font-size: 0.8rem; }
     </style>
 </head>
@@ -88,12 +94,22 @@
             <p class="network" style="margin-top: 0.5rem;">USDC / USDT / any EVM coin — same address, any EVM chain</p>
             <p class="addr rails" onclick="copyText(this)">0x11B185ceFcB2A001FFDddf0f226437D16EbF5437</p>
             <p class="network">Bitcoin</p>
-            <p class="addr rails" onclick="copyText(this)">bc1q39909zump058dnngjldelunf0plyzlqml2qm29</p>
+            <p class="addr rails" onclick="copyText(this)">bc1qa7txyzk3yqxgln09uzujqcy47eua4f8afsdhec</p>
             <p class="network">Solana — SOL or USDC-SPL</p>
             <p class="addr rails" onclick="copyText(this)">D1dCds8PrFFAPS5WqyVEai828UmEw77zVidtgeQSte78</p>
             <p class="network">Lightning ⚡</p>
             <p class="addr rails" onclick="copyText(this)">metatronscribe@coinos.io</p>
             <p class="network" style="margin-top: 0.75rem;">Match the ETH value at send time. Any other coin or currency (fiat by invoice) — just email us. If you can send it, we take it.</p>
+        </div>
+
+        <div class="qr-grid">
+            <p style="text-align:center; font-weight:600; margin-bottom:0.75rem;">📱 Scan to pay — any rail</p>
+            <div class="qr-row">
+                <div class="qr-card"><img src="qr/qr-evm.png" alt="EVM QR"><p>Base / any EVM</p><span class="qr-addr">0x11B185ceFcB2A001FFDddf0f226437D16EbF5437</span></div>
+                <div class="qr-card"><img src="qr/qr-btc.png" alt="BTC QR"><p>Bitcoin</p><span class="qr-addr">bc1qa7txyzk3yqxgln09uzujqcy47eua4f8afsdhec</span></div>
+                <div class="qr-card"><img src="qr/qr-sol.png" alt="SOL QR"><p>Solana — SOL / USDC-SPL</p><span class="qr-addr">D1dCds8PrFFAPS5WqyVEai828UmEw77zVidtgeQSte78</span></div>
+                <div class="qr-card"><img src="qr/qr-ln.png" alt="Lightning QR"><p>Lightning ⚡</p><span class="qr-addr">metatronscribe@coinos.io</span></div>
+            </div>
         </div>
 
         <div class="steps">
@@ -129,9 +145,15 @@
         const price = params.get('price') || '0';
         const name = decodeURIComponent(params.get('name') || 'Product');
 
+        const isAny = !price || price === '0' || price === '0.0';
         document.getElementById('productName').textContent = name;
-        document.getElementById('priceDisplay').textContent = price + ' ETH';
-        document.getElementById('stepAmount').textContent = price + ' ETH';
+        document.getElementById('priceDisplay').textContent = isAny ? 'Any amount' : price + ' ETH';
+        document.getElementById('stepAmount').textContent = isAny ? 'any amount' : price + ' ETH';
+        if (isAny) {
+            document.querySelector('.amount').style.fontSize = '1.4rem';
+            const infoP = document.querySelector('.product-info p');
+            if (infoP) infoP.textContent = 'Send any amount in any rail below — pay what it is worth to you, or per your quote';
+        }
 
         const emailSubject = encodeURIComponent('Order: ' + name);
         const emailBody = encodeURIComponent(
