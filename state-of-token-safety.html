@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>State of Token Safety — Launch Data Report (October 2026)</title>
+    <meta name="description" content="What 2,448 new token launches look like through a safety scanner. 1 in 6 carries a critical flag. Full aggregate data, methodology, and caveats.">
+    <style>
+        :root {
+            --bg: #0a0a0f; --card: #14141f; --border: #2a2a3a;
+            --text: #e0e0e0; --dim: #8888aa; --accent: #ff6b35; --green: #00cc66; --red: #ff4444; --amber: #ffaa33;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; line-height: 1.7; }
+        .container { max-width: 760px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+        header a { color: var(--accent); text-decoration: none; font-size: 0.9rem; }
+        h1 { font-size: 1.9rem; letter-spacing: -0.5px; margin: 1.25rem 0 0.4rem; }
+        .subtitle { color: var(--dim); font-size: 1rem; margin-bottom: 2rem; }
+        h2 { font-size: 1.25rem; margin: 2.25rem 0 0.75rem; padding-bottom: 0.4rem; border-bottom: 2px solid var(--border); }
+        h3 { font-size: 1.02rem; margin: 1.5rem 0 0.5rem; }
+        p { margin: 0.65rem 0; font-size: 0.97rem; }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.75rem; margin: 1.5rem 0; }
+        .stat { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; text-align: center; }
+        .stat .num { font-size: 1.7rem; font-weight: 700; color: var(--accent); }
+        .stat .num.green { color: var(--green); }
+        .stat .lbl { font-size: 0.78rem; color: var(--dim); margin-top: 0.25rem; line-height: 1.35; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin: 1rem 0; }
+        th, td { text-align: left; padding: 0.55rem 0.65rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+        th { background: var(--card); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.4px; color: var(--dim); }
+        td.n { text-align: right; font-variant-numeric: tabular-nums; }
+        .bar-row { display: flex; align-items: center; gap: 0.6rem; margin: 0.4rem 0; font-size: 0.88rem; }
+        .bar-label { flex: 0 0 240px; color: var(--dim); font-size: 0.82rem; }
+        .bar { height: 14px; border-radius: 7px; background: var(--accent); min-width: 4px; }
+        .bar.red { background: var(--red); } .bar.amber { background: var(--amber); }
+        .bar-val { color: var(--dim); font-size: 0.8rem; }
+        .note { background: var(--card); border-left: 3px solid var(--accent); border-radius: 6px; padding: 0.85rem 1rem; margin: 1rem 0; font-size: 0.88rem; color: var(--text); }
+        .note.green { border-left-color: var(--green); }
+        code { background: var(--border); padding: 0.1rem 0.4rem; border-radius: 4px; font-size: 0.85rem; color: var(--green); }
+        ul { margin: 0.6rem 0 0.6rem 1.4rem; font-size: 0.95rem; }
+        li { margin: 0.35rem 0; }
+        .cta { background: var(--card); border: 1px solid var(--green); border-radius: 12px; padding: 1.4rem; margin: 2rem 0 0.5rem; text-align: center; }
+        .cta h3 { margin-top: 0; }
+        .cta a.btn { display: inline-block; background: var(--accent); color: #fff; padding: 0.75rem 1.6rem; border-radius: 9px; text-decoration: none; font-weight: 700; margin: 0.5rem 0.35rem 0; }
+        .cta a.btn.ghost { background: transparent; border: 1px solid var(--border); color: var(--text); }
+        footer { text-align: center; padding: 2.5rem 0 1rem; color: var(--dim); font-size: 0.8rem; }
+        footer a { color: var(--accent); text-decoration: none; }
+        .small { font-size: 0.82rem; color: var(--dim); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="index.html">← Metatron's Store</a> · <a href="report.html">Token Safety Reports</a>
+        </header>
+
+        <h1>State of Token Safety</h1>
+        <p class="subtitle">What 2,448 new token launches look like through a safety scanner — October 2026 edition.<br>
+        <span class="small">By the team behind <a href="https://github.com/invisiblemonsters/token-launch-scan" style="color:var(--accent);">token-launch-scan</a>, a free open-source launch scanner.</span></p>
+
+        <div class="stats">
+            <div class="stat"><div class="num">1 in 6</div><div class="lbl">fresh launches carry a <b>critical</b> risk flag</div></div>
+            <div class="stat"><div class="num">45.9%</div><div class="lbl">of Solana launches have a single wallet holding <b>&gt;50% of supply</b></div></div>
+            <div class="stat"><div class="num">2,448</div><div class="lbl">launches screened over 20 days</div></div>
+            <div class="stat"><div class="num green">100%</div><div class="lbl">of sampled Solana mints had authorities <b>renounced</b> (a genuinely good trend)</div></div>
+        </div>
+
+        <h2>Method</h2>
+        <p>Every day, our scanner pulls fresh DexScreener-listed tokens (new launches and boosted listings) and runs them through independent data sources — GoPlus and honeypot.is for EVM chains, direct Solana RPC plus RugCheck for Solana — checking mint/freeze authority, owner privileges, honeypot behavior, LP lock status, taxes, and holder concentration.</p>
+        <p>This report covers two layers: <strong>2,448 launches screened across 20 daily runs</strong> (Sep 14 – Oct 3, 2026), and a <strong>deep-dive snapshot of 40 fresh launches</strong> with full per-token checks (37 Solana, 2 Ethereum, 1 BSC).</p>
+        <div class="note">This is a <b>snapshot review, not an audit</b>. We report what the data shows at scan time; on-chain state can change at any moment. Individual token names are deliberately omitted — the value is in the patterns.</div>
+
+        <h2>Headline numbers (deep-dive sample, n = 40)</h2>
+        <table>
+            <tr><th>Metric</th><th>Result</th></tr>
+            <tr><td>Any critical (RED) flag</td><td><b>7 of 40 — 17.5%</b></td></tr>
+            <tr><td>Any red <i>or</i> amber flag</td><td>11 of 40 — 27.5%</td></tr>
+            <tr><td>Creator has <b>previously rugged</b> a token</td><td>3 of 40 — all three scored highest-risk in the batch</td></tr>
+            <tr><td>Solana mint/freeze authority still active</td><td>0 of 37 — all renounced</td></tr>
+            <tr><td>EVM token with active mint function</td><td>1 of 3 — supply can be inflated</td></tr>
+            <tr><td>Largest holder &gt;50% of supply (Solana)</td><td>17 of 37 — 45.9%</td></tr>
+            <tr><td>Honeypots detected</td><td>0 — but see the coverage caveat below</td></tr>
+        </table>
+
+        <h2>Most common flags</h2>
+        <div class="bar-row"><span class="bar-label">Creator history of rugged tokens</span><div class="bar red" style="width:60px"></div><span class="bar-val">3 (critical)</span></div>
+        <div class="bar-row"><span class="bar-label">Single-holder ownership</span><div class="bar red" style="width:40px"></div><span class="bar-val">2 (critical)</span></div>
+        <div class="bar-row"><span class="bar-label">Low liquidity</span><div class="bar red" style="width:30px"></div><span class="bar-val">2 (1 critical, 1 warning)</span></div>
+        <div class="bar-row"><span class="bar-label">Copycat / impersonation token</span><div class="bar amber" style="width:40px"></div><span class="bar-val">2 (warning)</span></div>
+        <div class="bar-row"><span class="bar-label">LP unlocked / not burned (EVM)</span><div class="bar amber" style="width:40px"></div><span class="bar-val">2 (warning)</span></div>
+
+        <h2>What we actually found</h2>
+        <h3>The rug-history cluster is the sharpest signal we have</h3>
+        <p>Three tokens in the sample traced to creators with a documented history of rugged tokens — and all three carried the highest risk scores in the entire batch, two of them also flagged as copycats. If you look at one thing before buying a fresh launch, look at <em>who deployed it and what else they've deployed</em>.</p>
+
+        <h3>Concentration is the quiet risk: nearly half of launches</h3>
+        <p>45.9% of sampled Solana tokens have a largest holder above 50% of supply (one reached 96.3%). <b>Important caveat:</b> this metric is unadjusted for LP pools, bonding curves, and locked accounts — most of these tokens still score low-risk on supplementary checks. Treat it as an exposure flag worth understanding, not automatic proof of malice. The question that matters: does anyone <em>outside the team</em> control the float?</p>
+
+        <h3>The good news: Solana launch hygiene is improving</h3>
+        <p>Every single Solana token in the sample (37/37) had both mint and freeze authority renounced. A year ago that number would have been embarrassing. Pump.fun-era defaults made renouncement the norm — one of the genuinely positive shifts in this ecosystem.</p>
+
+        <h3>EVM launches tell a different story</h3>
+        <p>Of the three EVM tokens deeper-checked, one had an <b>active mint function</b> (supply can be inflated at will) and two showed <b>unlocked, unburned liquidity</b>. Small sample, but the pattern matches what EVM traders know: authority hygiene is worse off-Solana.</p>
+
+        <h2>The 20-day trend</h2>
+        <table>
+            <tr><th></th><th>Total</th><th>Avg/day</th></tr>
+            <tr><td>Launches screened</td><td class="n">2,448</td><td class="n">122</td></tr>
+            <tr><td>Launches digested (passed thresholds)</td><td class="n">270</td><td class="n">13.5</td></tr>
+            <tr><td>Red-flag leads identified</td><td class="n">22</td><td class="n">1.1</td></tr>
+        </table>
+        <p class="small">Daily red-flag rate: ~8% of digested tokens carried at least one critical flag; in the stricter deep-dive sample, 17.5% carried one. Fresh-launch risk is not rare — it's routine.</p>
+
+        <h2>Caveats &amp; honesty</h2>
+        <ul>
+            <li>Snapshot, not audit. Per-token raw data is preserved; we publish aggregates, not accusations against named tokens.</li>
+            <li>The deep-dive sample skewed Solana-heavy (37/40) because the fresh-launch feeds were Solana-dominated at fetch time. EVM findings are indicative at n=3.</li>
+            <li>Holder concentration is unadjusted for LP/bonding-curve/locked accounts — a high number is a question to ask, not a verdict.</li>
+            <li>Honeypot simulation returned no data for the brand-new EVM tokens (a known coverage gap for fresh contracts); absence of a honeypot flag on day-one EVM tokens is weak evidence, and we say so.</li>
+            <li>This report is informational. Do your own research; nothing here is financial advice.</li>
+        </ul>
+
+        <div class="cta">
+            <h3>Point the scanner at any token yourself</h3>
+            <p class="small">Free &amp; open source (MIT) — or get a full deep-dive report with a human review, delivered by email.</p>
+            <a class="btn" href="https://github.com/invisiblemonsters/token-launch-scan">Free scanner on GitHub</a>
+            <a class="btn ghost" href="report.html">$9 Token Safety Report</a>
+        </div>
+
+        <footer>
+            <p>State of Token Safety — October 2026 · data collected Sep 14 – Oct 3, 2026</p>
+            <p style="margin-top:0.4rem;"><a href="index.html">Metatron's Store</a> · <a href="https://github.com/invisiblemonsters">github.com/invisiblemonsters</a> · <a href="mailto:metatron.backup2026@tutamail.com">contact</a></p>
+        </footer>
+    </div>
+</body>
+</html>
